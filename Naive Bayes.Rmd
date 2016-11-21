@@ -1,0 +1,233 @@
+---
+title: "Naive Bayes"
+author: "Ekta Ahuja"
+date: "May 17, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r cars}
+summary(cars)
+setwd("/Users/Ekta/Digging Project")
+student = read.csv("Student.csv")
+
+student$avg_consumption = ((5*student$Dalc) + (2*student$Walc))/7
+
+# Classification of the alcohol consumption as a vector
+student$avg_consumption_class = ifelse(student$avg_consumption < 3,0,1)
+
+# Correlation between number of absences and alcohol consumption
+plot(student$absences,student$avg_consumption)
+
+cor.test(student$absences,student$avg_consumption)
+
+plot(student$health,student$avg_consumption)
+
+cor.test(student$health,student$avg_consumption)
+
+plot(student$age,student$avg_consumption)
+
+cor.test(student$age,student$avg_consumption)
+
+plot(student$G1,student$avg_consumption)
+
+cor.test(student$G1,student$avg_consumption)
+
+plot(student$G2,student$avg_consumption)
+
+cor.test(student$G2,student$avg_consumption)
+
+plot(student$G3,student$avg_consumption)
+
+cor.test(student$G3,student$avg_consumption)
+
+
+
+tmp_var = sample(2, nrow(student),replace=TRUE, prob=c(0.75,0.25))
+train_student = student[tmp_var==1,]
+test_student =  student[tmp_var==2,] 
+#classes <- as.factor(train_student$avg_consumption_class)
+
+###########Model 1###########
+#NaiveBayes
+library(e1071)
+#?naiveBayes
+nb = naiveBayes(avg_consumption_class ~., data = train_student)
+class(nb)
+#str(nb)
+test_student$predict <- predict(nb, test_student, type = c("raw"))
+#(test_student)
+test_student$predict = ifelse(test_student$predict < 3,0,1)
+test_student$avg_consumption_class <- as.character(test_student$avg_consumption_class)
+#View(test_student)
+test_student$result <- test_student$predict == test_student$avg_consumption_class
+#View(test_student)
+
+#Calculate accuracy
+t <- length(test_student$result[test_student$result==TRUE])
+f <- length(test_student$result[test_student$result==FALSE])
+
+accuracy <- (t * 100)/(t+f)
+accuracy
+
+tmp_var = sample(2, nrow(student),replace=TRUE, prob=c(0.75,0.25))
+train_student = student[tmp_var==1,]
+test_student =  student[tmp_var==2,] 
+
+######Model 2#########
+#NaiveBayes
+library(e1071)
+#?naiveBayes
+nb = naiveBayes(avg_consumption_class ~ age+sex, data = train_student)
+class(nb)
+#str(nb)
+test_student$predict <- predict(nb, test_student, type = c("raw"))
+#(test_student)
+test_student$predict = ifelse(test_student$predict < 3,0,1)
+test_student$avg_consumption_class <- as.character(test_student$avg_consumption_class)
+#View(test_student)
+test_student$result <- test_student$predict == test_student$avg_consumption_class
+#View(test_student)
+
+#Calculate accuracy
+t <- length(test_student$result[test_student$result==TRUE])
+f <- length(test_student$result[test_student$result==FALSE])
+
+accuracy <- (t * 100)/(t+f)
+accuracy
+
+tmp_var = sample(2, nrow(student),replace=TRUE, prob=c(0.75,0.25))
+train_student = student[tmp_var==1,]
+test_student =  student[tmp_var==2,] 
+###########Model 3###########
+#NaiveBayes
+library(e1071)
+#?naiveBayes
+nb = naiveBayes(avg_consumption_class ~ age+sex+G1+G2+G3, data = train_student)
+class(nb)
+#str(nb)
+test_student$predict <- predict(nb, test_student, type = c("raw"))
+#(test_student)
+test_student$predict = ifelse(test_student$predict < 3,0,1)
+test_student$avg_consumption_class <- as.character(test_student$avg_consumption_class)
+#View(test_student)
+test_student$result <- test_student$predict == test_student$avg_consumption_class
+#View(test_student)
+
+#Calculate accuracy
+t <- length(test_student$result[test_student$result==TRUE])
+f <- length(test_student$result[test_student$result==FALSE])
+
+accuracy <- (t * 100)/(t+f)
+accuracy
+
+tmp_var = sample(2, nrow(student),replace=TRUE, prob=c(0.75,0.25))
+train_student = student[tmp_var==1,]
+test_student =  student[tmp_var==2,] 
+###########Model 4###########
+#NaiveBayes
+library(e1071)
+#?naiveBayes
+nb = naiveBayes(avg_consumption_class ~ age+sex+absences, data = train_student)
+class(nb)
+#str(nb)
+test_student$predict <- predict(nb, test_student, type = c("raw"))
+#(test_student)
+test_student$predict = ifelse(test_student$predict < 3,0,1)
+test_student$avg_consumption_class <- as.character(test_student$avg_consumption_class)
+#View(test_student)
+test_student$result <- test_student$predict == test_student$avg_consumption_class
+#View(test_student)
+
+#Calculate accuracy
+t <- length(test_student$result[test_student$result==TRUE])
+f <- length(test_student$result[test_student$result==FALSE])
+
+accuracy <- (t * 100)/(t+f)
+accuracy
+
+tmp_var = sample(2, nrow(student),replace=TRUE, prob=c(0.75,0.25))
+train_student = student[tmp_var==1,]
+test_student =  student[tmp_var==2,] 
+###########Model 5###########
+#NaiveBayes
+library(e1071)
+#?naiveBayes
+nb = naiveBayes(avg_consumption_class ~ health+freetime+internet, data = train_student)
+class(nb)
+#str(nb)
+test_student$predict <- predict(nb, test_student, type = c("raw"))
+#(test_student)
+test_student$predict = ifelse(test_student$predict < 3,0,1)
+test_student$avg_consumption_class <- as.character(test_student$avg_consumption_class)
+#View(test_student)
+test_student$result <- test_student$predict == test_student$avg_consumption_class
+#View(test_student)
+
+#Calculate accuracy
+t <- length(test_student$result[test_student$result==TRUE])
+f <- length(test_student$result[test_student$result==FALSE])
+
+accuracy <- (t * 100)/(t+f)
+accuracy
+
+tmp_var = sample(2, nrow(student),replace=TRUE, prob=c(0.75,0.25))
+train_student = student[tmp_var==1,]
+test_student =  student[tmp_var==2,] 
+###########Model 6###########
+#NaiveBayes
+library(e1071)
+#?naiveBayes
+nb = naiveBayes(avg_consumption_class ~ Mjob+Fjob+Medu+Fedu, data = train_student)
+class(nb)
+#str(nb)
+test_student$predict <- predict(nb, test_student, type = c("raw"))
+#(test_student)
+test_student$predict = ifelse(test_student$predict < 3,0,1)
+test_student$avg_consumption_class <- as.character(test_student$avg_consumption_class)
+#View(test_student)
+test_student$result <- test_student$predict == test_student$avg_consumption_class
+#View(test_student)
+
+#Calculate accuracy
+t <- length(test_student$result[test_student$result==TRUE])
+f <- length(test_student$result[test_student$result==FALSE])
+
+accuracy <- (t * 100)/(t+f)
+accuracy
+
+tmp_var = sample(2, nrow(student),replace=TRUE, prob=c(0.75,0.25))
+train_student = student[tmp_var==1,]
+test_student =  student[tmp_var==2,] 
+###########Model 6###########
+#NaiveBayes
+library(e1071)
+#?naiveBayes
+nb = naiveBayes(avg_consumption_class ~ studytime+freetime+failures, data = train_student)
+class(nb)
+#str(nb)
+test_student$predict <- predict(nb, test_student, type = c("raw"))
+#(test_student)
+test_student$predict = ifelse(test_student$predict < 3,0,1)
+test_student$avg_consumption_class <- as.character(test_student$avg_consumption_class)
+#View(test_student)
+test_student$result <- test_student$predict == test_student$avg_consumption_class
+#View(test_student)
+
+#Calculate accuracy
+t <- length(test_student$result[test_student$result==TRUE])
+f <- length(test_student$result[test_student$result==FALSE])
+
+accuracy <- (t * 100)/(t+f)
+accuracy
+
+```
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

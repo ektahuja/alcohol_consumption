@@ -1,0 +1,202 @@
+---
+title: "AlcoholConsumption"
+author: "Amar"
+date: "24 April 2016"
+output: html_document
+---
+
+
+```{r Alcohol} 
+library(ggplot2)
+library(scales)
+student = read.csv("Student.csv")
+
+# Number of rows and Number of columns in the dataset
+dim(student)
+
+# Calculation of average likelihood of drinking in student in weekday and weekend
+
+student$avg_consumption = ((5*student$Dalc) + (2*student$Walc))/7
+
+# Classification of the alcohol consumption as a vector
+student$avg_consumption_class = ifelse(student$avg_consumption < 3,0,1)
+
+# Summary of the dataset
+summary(student)
+
+# Fathers profession and alcohol consumption in students by GG plot
+ggplot(student, aes(x = student$Fjob, y = student$avg_consumption)) + geom_bar(stat="identity", fill = "#31DBDB", color="#31DBDB") + ggtitle ("Alcohol Consumption by Fathers' Profession") + labs(x = "Father's Job", y = "Alcohol Consumption")+ theme(plot.title = element_text(color="black", face="bold", size=18, hjust=0)) + theme(axis.title = element_text(color="black", face="bold", size=18)) + scale_y_continuous(breaks = c(25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375))
+
+#Mothers profession and alcohol consumption in students by GG plot
+ggplot(student, aes(x = student$Mjob, y = student$avg_consumption)) + geom_bar(stat="identity", fill = "#D131DB", color="#D131DB") + ggtitle ("Alcohol Consumption by Mothers' Profession") + labs(x = "Mother's Job", y = "Alcohol Consumption")+ theme(plot.title = element_text(color="black", face="bold", size=18, hjust=0)) + theme(axis.title = element_text(color="black", face="bold", size=18)) + scale_y_continuous(breaks = c(25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375))
+
+
+# Alcohol consumption by student's age
+ggplot(student, aes(x = student$age, y = student$avg_consumption)) + geom_bar(stat="identity", fill = "red", color="red") + ggtitle ("Alcohol Consumption by Student's Age") + labs(x = "Student's Age", y = "Alcohol Consumption")+ theme(plot.title = element_text(color="black", face="bold", size=18, hjust=0)) + theme(axis.title = element_text(color="black", face="bold", size=18)) + scale_y_continuous(breaks = c(25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275)) + scale_x_continuous(breaks = c(15, 16, 17, 18, 19, 20, 21, 22))
+
+
+# by gender
+
+counts <- table(student$sex, student$avg_consumption_class)
+barplot(counts, main="Alcohol consumption by gender",
+  xlab="Alcohol Consumption", col=c("darkblue","red"),
+ 	legend = rownames(counts), beside=TRUE)
+
+counts <- table(student$romantic, student$avg_consumption_class)
+barplot(counts, main="Alcohol consumption by Romantic Nature",
+  xlab="Alcohol Consumption", col=c("darkblue","red"),
+ 	legend = rownames(counts), beside=TRUE)
+
+counts <- table(student$schoolsup, student$avg_consumption_class)
+barplot(counts, main="Alcohol consumption by School Support",
+  xlab="Alcohol Consumption", col=c("darkblue","red"),
+ 	legend = rownames(counts), beside=TRUE)
+
+# Making tables that shows alcohol consumption, stratified by sex 
+library(mosaic)
+
+xtabs(~avg_consumption_class + sex, data = student)
+
+
+xtabs(~avg_consumption_class + romantic, data = student)
+
+xtabs(~avg_consumption_class + paid, data = student)
+
+xtabs(~avg_consumption_class + schoolsup, data = student)
+
+xtabs(~avg_consumption_class + famsup, data = student)
+
+xtabs(~avg_consumption_class + activities, data = student)
+
+xtabs(~avg_consumption_class + address, data = student)
+
+xtabs(~avg_consumption_class + Pstatus, data = student)
+
+xtabs(~avg_consumption_class + famsize, data = student)
+
+
+# Correlation between number of absences and alcohol consumption
+plot(student$absences,student$avg_consumption)
+
+cor.test(student$absences,student$avg_consumption)
+
+# Plot showing the relation between the students freetime and likelihood of alcohol consumption
+plot(student$freetime, student$avg_consumption,col = "dark red",lwd = 7, main = "students freetime and likelihood of alcohol consumption", ylab = "Alcohol Consumption", xlab = "Students Freetime")
+
+#Average grade calculation
+student$avg_grade = (student$G1 + student$G2 + student$G3)/3
+
+# Plot showing the relation between the students grades and alocohol consumption
+plot(student$avg_grade, student$avg_consumption,col = "dark red",lwd = 7, main = "students grades and likelihood of alcohol consumption", ylab = "Alcohol Consumption", xlab = "Students Grades")
+
+
+# head data
+head(student)
+
+# Write.csv
+write.csv(student,"Final_Student")
+
+
+############################################################################
+###############################PROJETCT#####################################
+############################################################################
+
+
+# Linear Regression
+reg_model = lm(student$avg_consumption~sex+age+address+famsize+Pstatus+Medu+Fedu+Mjob+Fjob+reason+guardian+traveltime+studytime+failures+schoolsup+famsup+paid+activities+nursery+higher+internet+romantic+famrel+freetime+goout+health+absences+G1+G2+G3, data = student)
+
+#Summary of the multiple regression
+summary(reg_model)
+
+# As per the summary, we can deduce that the following variables has most effect on alcohol consumption:
+
+#1) Sex
+#2) reason
+#3) paid
+#4) activities
+#5) nursery
+#6) famrel
+#7) freetime
+#8) goout
+#9) absences
+
+# Correlation graphs between all variables
+
+set.seed(5)
+set.seed(1234)
+
+#Creating test data and train data
+tmp_var = sample(2, nrow(student),replace=TRUE, prob=c(0.75,0.25))
+train_student = student[tmp_var==1,]
+test_student =  student[tmp_var==2,] 
+
+
+# Regression test
+
+Accuracy_log = data.frame("Parameters" = character(), "Accuracy" = numeric())
+############################################################################
+model_logic<-glm(avg_consumption_class ~ age + sex + G1 + G2 + G3, family = binomial(link="logit"), data=train_student)
+pred<-predict(model_logic,test_student,type='response')
+pred<-ifelse(pred>0.5, 1, 0)
+model_error<-mean(pred!=test_student$avg_consumption_class)
+Accuracy = 1-model_error
+Accuracy_log = rbind(Accuracy_log,data.frame(Parameters = 'age + sex + G1 + G2 + G3', Accuracy ))
+
+
+
+model_logic<-glm(avg_consumption_class ~ sex, family = binomial(link="logit"), data=train_student)
+pred<-predict(model_logic,test_student,type='response')
+pred<-ifelse(pred>0.5, 1, 0)
+model_error<-mean(pred!=test_student$avg_consumption_class)
+Accuracy = 1-model_error
+Accuracy_log = rbind(Accuracy_log,data.frame(Parameters = 'G1 + G2+ G3', Accuracy ))
+
+
+model_logic<-glm(avg_consumption_class ~ absences, family = binomial(link="logit"), data=train_student)
+pred<-predict(model_logic,test_student,type='response')
+pred<-ifelse(pred>0.5, 1, 0)
+model_error<-mean(pred!=test_student$avg_consumption_class)
+Accuracy = 1-model_error
+Accuracy_log = rbind(Accuracy_log,data.frame(Parameters = 'Absences', Accuracy ))
+
+
+model_logic<-glm(avg_consumption_class ~ sex, family = binomial(link="logit"), data=train_student)
+pred<-predict(model_logic,test_student,type='response')
+pred<-ifelse(pred>0.5, 1, 0)
+model_error<-mean(pred!=test_student$avg_consumption_class)
+Accuracy = 1-model_error
+Accuracy_log = rbind(Accuracy_log,data.frame(Parameters = 'sex', Accuracy ))
+
+
+model_logic<-glm(avg_consumption_class ~ age + sex + G1 + G2 + G3 + goout, family = binomial(link="logit"), data=train_student)
+pred<-predict(model_logic,test_student,type='response')
+pred<-ifelse(pred>0.5, 1, 0)
+model_error<-mean(pred!=test_student$avg_consumption_class)
+Accuracy = 1-model_error
+Accuracy_log = rbind(Accuracy_log,data.frame(Parameters = 'age + sex + G1 + G2 + G3 + goout', Accuracy ))
+
+model_logic<-glm(avg_consumption_class ~ age + sex + G1 + G2 + G3 + goout+traveltime+ studytime, family = binomial(link="logit"), data=train_student)
+pred<-predict(model_logic,test_student,type='response')
+pred<-ifelse(pred>0.5, 1, 0)
+model_error<-mean(pred!=test_student$avg_consumption_class)
+Accuracy = 1-model_error
+Accuracy_log = rbind(Accuracy_log,data.frame(Parameters = 'age + sex + G1 + G2 + G3 + goout+ traveltime + studytime', Accuracy ))
+
+model_logic<-glm(avg_consumption_class ~ age + sex + G1 + G2 + G3 + goout+traveltime+ studytime+freetime, family = binomial(link="logit"), data=train_student)
+pred<-predict(model_logic,test_student,type='response')
+pred<-ifelse(pred>0.5, 1, 0)
+model_error<-mean(pred!=test_student$avg_consumption_class)
+Accuracy = 1-model_error
+Accuracy_log = rbind(Accuracy_log,data.frame(Parameters = 'age + sex + G1 + G2 + G3 + goout+ traveltime + studytime+freetime', Accuracy ))
+
+
+model_logic<-glm(avg_consumption_class ~ sex+reason+paid+activities+nursery+famrel+freetime+goout+absences, family = binomial(link="logit"), data=train_student)
+pred<-predict(model_logic,test_student,type='response')
+pred<-ifelse(pred>0.5, 1, 0)
+model_error<-mean(pred!=test_student$avg_consumption_class)
+Accuracy = 1-model_error
+Accuracy_log = rbind(Accuracy_log,data.frame(Parameters = 'age + sex + G1 + G2 + G3 + goout+ traveltime + studytime+freetime', Accuracy ))
+
+#Accuracy Table
+Accuracy_log
+
