@@ -5,12 +5,12 @@ Ekta Ahuja, emahuja@umd.edu,
 Kristen Bertch, kristennbertch@umd.edu,
 Amar Kurane, akurane@umd.edu 
 
-# Motivation:
+# Motivation
 
 Drinking is a common and even expected occurrence for college students in the United States. Unfortunately, drinking can lead to many negative consequences. As explained by the National Institute on Alcohol Abuse and Alcoholism, “1,825 college students between the ages of 18 and 24 die each year from alcohol-related unintentional injuries. Another student who has been drinking assaults more than 690,000 students between the ages of 18 and 24. More than 150,000 students develop an alcohol-related health problem and between 1.2 and 1.5 percent of students indicate that they tried to commit suicide within the past year due to drinking or drug use.”
 Drinking is a serious problem that many students are faced with. The purpose of this research project is to identify the signs that a student is likely to consume high amounts of alcohol. If schools and counselors know which groups of students are a high risk of drinking heavily, they will be able to focus their efforts on the students who need the most help. The more we know about high risk students, the more we will be able to help them make the right decisions.
 
-# Methodology:
+# Methodology
 ## Data Preparation:
 
 Our first step was to combine the weekday drinking (Dalc column) and the weekend drinking (Walc) in order to get the average the student drinks throughout the week.  We did this by multiplying the weekday-drinking column by five, multiplying the weekend drinking column by two, and then adding these numbers together. This gave us the average weekly consumption for each student.
@@ -49,10 +49,10 @@ Finally, we split our data into test data and training data and then performed r
 We also implemented Naïve Bayes Classification algorithm to find out which set of variables were able to best predict whether a student is likely to be invloved in alcohol consumption. And we found out that ‘Age’ and ‘Sex’ of the student were the best predictors of alcohol consumption.
 Then, to test the accuracy for our model, we plotted ROC graphs for Decision Tree and Random Forest Algorithms.
 
-## Conclusion:
+## Conclusion
 We could achieve the accuracy of about 95% using Logistic Regression Model for whether a student is likely to be a drinker. Our technique was effective in showing what schools should look for as early warning signs that students may be prone to drinking.
 
-## Limitations:
+## Limitations
 
 * Limited number of records in the dataset
 * Data is collected from the just two schools of same geograph
